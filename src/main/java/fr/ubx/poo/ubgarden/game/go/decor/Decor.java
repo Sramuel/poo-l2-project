@@ -7,6 +7,8 @@ import fr.ubx.poo.ubgarden.game.go.Walkable;
 import fr.ubx.poo.ubgarden.game.go.bonus.Bonus;
 import fr.ubx.poo.ubgarden.game.go.personage.Gardener;
 
+import java.util.Objects;
+
 public abstract class Decor extends GameObject implements Walkable, Pickupable {
 
     private Bonus bonus;

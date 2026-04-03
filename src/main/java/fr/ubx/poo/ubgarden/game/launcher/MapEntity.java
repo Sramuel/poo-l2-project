@@ -11,6 +11,7 @@ public enum MapEntity {
 
     Gardener('P'),
     Hedgehog('H'),
+    Insecticide('I'),
     DoorPrevOpened('<'),
     DoorNextOpened('>'),
     DoorNextClosed('D'),
