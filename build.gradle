@@ -1,0 +1,53 @@
+plugins {
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
+}
+
+group 'fr.ubx.poo.ubgarden'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+mainClassName = 'fr.ubx.poo.ubgarden.Main'
+
+javafx {
+    version = '17'
+    modules = ['javafx.controls', 'javafx.fxml']
+}
+
+task submissionZip {
+    group = 'build'
+    description = 'Create a zip archive containing the useful project files for submission.'
+    doLast {
+        def archive = file('submission.zip')
+        delete archive
+        ant.zip(destfile: archive) {
+            zipfileset(dir: projectDir, prefix: 'submission') {
+                include(name: 'build.gradle')
+                include(name: 'settings.gradle')
+                include(name: 'gradlew')
+                include(name: 'gradlew.bat')
+                include(name: 'README.md')
+            }
+            zipfileset(dir: file('src'), prefix: 'submission/src') {
+                exclude(name: '**/.idea/**')
+                exclude(name: '**/*.iml')
+                exclude(name: '**/.DS_Store')
+            }
+            zipfileset(dir: file('gradle'), prefix: 'submission/gradle')
+            zipfileset(dir: file('world'), prefix: 'submission/world')
+        }
+    }
+}
