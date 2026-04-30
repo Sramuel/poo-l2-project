@@ -4,10 +4,9 @@ import fr.ubx.poo.ubgarden.game.go.bonus.Carrots;
 import fr.ubx.poo.ubgarden.game.go.bonus.EnergyBoost;
 import fr.ubx.poo.ubgarden.game.go.bonus.Insecticide;
 import fr.ubx.poo.ubgarden.game.go.bonus.PoisonedApple;
-import fr.ubx.poo.ubgarden.game.go.decor.Decor;
-import fr.ubx.poo.ubgarden.game.go.decor.Hedgehog;
-import fr.ubx.poo.ubgarden.game.go.decor.Tree;
+import fr.ubx.poo.ubgarden.game.go.decor.*;
 import fr.ubx.poo.ubgarden.game.go.decor.ground.Grass;
+import fr.ubx.poo.ubgarden.game.go.decor.ground.Land;
 import fr.ubx.poo.ubgarden.game.launcher.MapEntity;
 import fr.ubx.poo.ubgarden.game.launcher.MapLevel;
 
@@ -33,12 +32,32 @@ public class Level implements Map {
                 Position position = new Position(level, i, j);
                 MapEntity mapEntity = entities.get(i, j);
                 switch (mapEntity) {
-                    case Grass:
-                        decors.put(position, new Grass(position));
-                        break;
-                    case Tree:
+
+                    case Tree:{
                         decors.put(position, new Tree(position));
-                        break;
+                        break;}
+
+                    //decor
+                    case Grass:{
+                        decors.put(position, new Grass(position));
+                        break;}
+                    case Land:{
+                        decors.put(position, new Land(position));
+                        break;}
+                    case Flowers:{
+                        decors.put(position, new Flowers(position));
+                        break;}
+                    case NestWasp:{
+                        decors.put(position, new NestWasp(position));
+                        break;}
+                    case NestHornet:{
+                        decors.put(position, new NestHornet(position));
+                        break;}
+                    case Hedgehog:{
+                        decors.put(position, new Hedgehog(position));
+                        break;}
+
+                    //bonus
                     case Carrots:{
                         Decor grass = new Grass(position);
                         grass.setBonus(new Carrots(position, grass));
@@ -49,20 +68,17 @@ public class Level implements Map {
                         grass.setBonus(new PoisonedApple(position, grass));
                         decors.put(position,grass);
                         break;}
-                    case Hedgehog:
-                        decors.put(position, new Hedgehog(position));
-                        break;
+                    case Apple: {
+                        Decor grass = new Grass(position);
+                        grass.setBonus(new EnergyBoost(position, grass));
+                        decors.put(position, grass);
+                        break;}
                     case Insecticide:{
                         Decor grass = new Grass(position);
                         grass.setBonus(new Insecticide(position, grass));
                         decors.put(position,grass);
                         break;}
-                    case Apple: {
-                        Decor grass = new Grass(position);
-                        grass.setBonus(new EnergyBoost(position, grass));
-                        decors.put(position, grass);
-                        break;
-                    }
+
                     default:
                         throw new RuntimeException("EntityCode " + mapEntity.name() + " not processed");
                 }

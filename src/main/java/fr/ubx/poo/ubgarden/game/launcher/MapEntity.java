@@ -17,8 +17,9 @@ public enum MapEntity {
     DoorNextClosed('D'),
 
     NestWasp('n'),
-    NestHornet('N');
-
+    Wasp('w'),
+    NestHornet('N'),
+    Hornet('W');
 
     private final char code;
 

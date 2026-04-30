@@ -6,7 +6,6 @@ import fr.ubx.poo.ubgarden.game.go.personage.Gardener;
 
 public class Carrots extends Bonus {
 
-
     public Carrots(Position position, Decor decor) {
         super(position, decor);
     }

@@ -167,6 +167,10 @@
                 gameLoop.stop();
                 showMessage("Perdu!", Color.RED);
             }
+            if (gardener.getWin()) {
+                gameLoop.stop();
+                showMessage("Gagné!", Color.GOLD);
+            }
         }
 
         public void cleanupSprites() {
