@@ -22,6 +22,8 @@ import fr.ubx.poo.ubgarden.game.go.decor.Hedgehog;
 import fr.ubx.poo.ubgarden.game.go.decor.Tree;
 import javafx.scene.paint.Color;
 
+import fr.ubx.poo.ubgarden.game.engine.Timer;
+
 public class Gardener extends GameObject implements Movable, PickupVisitor, WalkVisitor {
 
     private int energy;
@@ -29,11 +31,16 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     private boolean moveRequested = false;
     private boolean won = false;
 
+    private Timer energyRecoverTimer;
+
     public Gardener(Game game, Position position) {
 
         super(game, position);
         this.direction = Direction.DOWN;
         this.energy = game.configuration().gardenerEnergy();
+
+        this.energyRecoverTimer = new Timer(game.configuration().energyRecoverDuration());
+        this.energyRecoverTimer.start();
     }
 
     @Override
@@ -116,6 +123,16 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
             if (canMove(direction)) {
                 move(direction);
                 this.energy = getEnergy() - next.energyConsumptionWalk();
+            }
+            energyRecoverTimer.start();
+        }else {
+            energyRecoverTimer.update(now);
+            if (!energyRecoverTimer.isRunning()) {
+                int maxEnergy = game.configuration().gardenerEnergy();
+                if (this.energy<maxEnergy) {
+                    this.energy++;
+                }
+                energyRecoverTimer.start();
             }
         }
         moveRequested = false;
