@@ -26,6 +26,8 @@ import fr.ubx.poo.ubgarden.game.engine.Timer;
 
 public class Gardener extends GameObject implements Movable, PickupVisitor, WalkVisitor {
 
+    private int diseaseLevel = 1;
+
     private int energy;
     private Direction direction;
     private boolean moveRequested = false;
@@ -45,8 +47,11 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
 
     @Override
     public void pickUp(EnergyBoost energyBoost) {
-// TODO
-        System.out.println("I am taking the boost, I should do something ...");
+        int maxEnergy=game.configuration().gardenerEnergy();
+        int boostval=game.configuration().energyBoost();
+        this.energy=Math.min(this.energy+boostval, maxEnergy); //pour pas dépasser l'énergie maximum
+        this.diseaseLevel = 1;
+        energyBoost.remove();
 
     }
 
@@ -122,7 +127,7 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
         if (moveRequested) {
             if (canMove(direction)) {
                 move(direction);
-                this.energy = getEnergy() - next.energyConsumptionWalk();
+                this.energy = getEnergy() - next.energyConsumptionWalk()*this.diseaseLevel;
             }
             energyRecoverTimer.start();
         }else {
