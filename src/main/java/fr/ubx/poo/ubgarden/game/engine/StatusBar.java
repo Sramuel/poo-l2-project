@@ -5,6 +5,7 @@
 package fr.ubx.poo.ubgarden.game.engine;
 
 import fr.ubx.poo.ubgarden.game.Game;
+import fr.ubx.poo.ubgarden.game.go.personage.Gardener;
 import fr.ubx.poo.ubgarden.game.view.ImageResource;
 import fr.ubx.poo.ubgarden.game.view.ImageResourceFactory;
 import javafx.scene.Group;
@@ -76,9 +77,10 @@ public class StatusBar {
     }
 
     public void update(Game game) {
-        insecticideNumber.setText("?");
-        diseaseLevel.setText("x?");
-        energy.setText(game.getGardener().toString_energy());
+        Gardener gardener = game.getGardener();
+        insecticideNumber.setText(String.valueOf(gardener.getBombs()));
+        diseaseLevel.setText("x" + gardener.getDiseaseLevel());
+        energy.setText(gardener.toString_energy());
     }
 
 }

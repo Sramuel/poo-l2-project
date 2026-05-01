@@ -24,7 +24,14 @@ import javafx.scene.paint.Color;
 
 import fr.ubx.poo.ubgarden.game.engine.Timer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Gardener extends GameObject implements Movable, PickupVisitor, WalkVisitor {
+
+    public int getDiseaseLevel() {
+        return diseaseLevel;
+    }
 
     private int diseaseLevel = 1;
 
@@ -34,6 +41,18 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     private boolean won = false;
 
     private Timer energyRecoverTimer;
+
+    private int carrots =0;
+    private int bombs =0;
+    private List<Timer> diseaseTimers = new ArrayList<>(); //gère plusieurs trognons en même temps
+
+    public int getCarrots() {
+        return carrots;
+    }
+
+    public int getBombs() {
+        return bombs;
+    }
 
     public Gardener(Game game, Position position) {
 
@@ -51,20 +70,27 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
         int boostval=game.configuration().energyBoost();
         this.energy=Math.min(this.energy+boostval, maxEnergy); //pour pas dépasser l'énergie maximum
         this.diseaseLevel = 1;
+        this.diseaseTimers.clear();
         energyBoost.remove();
 
     }
 
     public void pickUp(PoisonedApple poisonedApple){
-        System.out.println("I am PoisonedApple");
+        this.diseaseLevel++;
+        Timer diseaseTimer= new Timer(game.configuration().diseaseDuration());
+        diseaseTimer.start();
+        this.diseaseTimers.add(diseaseTimer);
+        poisonedApple.remove();
     }
 
     public void pickUp(Carrots carrots){
-        System.out.println("I am Carrots");
+        this.carrots++;
+        carrots.remove();
     }
 
     public void pickUp(Insecticide insecticide) {
-        System.out.println("I am Insecticide");
+        this.bombs++;
+        insecticide.remove();
     }
 
     public void pickUp(Hedgehog hedgehog) {
@@ -124,6 +150,7 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     public void update(long now) {
         Position nextPos = direction.nextPosition(getPosition());
         Decor next = game.world().getGrid().get(nextPos);
+        //GESTION DU DEPLACEMENT ET DE LA RECUPERATION D'ENERGIE
         if (moveRequested) {
             if (canMove(direction)) {
                 move(direction);
@@ -139,6 +166,19 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
                 }
                 energyRecoverTimer.start();
             }
+        }
+        //GESTION DE LA FIN DES MALADIES (les trognons de pomme)
+        for (int i = diseaseTimers.size() - 1; i >= 0; i--) {
+            Timer t = diseaseTimers.get(i);
+            t.update(now);
+            if (!t.isRunning()) {
+                diseaseTimers.remove(i);
+                diseaseLevel--;
+            }
+        }
+        //GESTION DE LA DEFAITE
+        if (this.energy <= 0) {
+            this.energy = 0;
         }
         moveRequested = false;
     }
