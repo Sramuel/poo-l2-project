@@ -3,6 +3,8 @@ package fr.ubx.poo.ubgarden.game.launcher;
 import fr.ubx.poo.ubgarden.game.*;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Properties;
 
 public class GameLauncher {
@@ -37,7 +39,46 @@ public class GameLauncher {
     }
 
     public Game load(File file) {
-        return null;
+        Properties emptyConfig = new Properties();
+        try (FileReader reader = new FileReader(file)) {
+            emptyConfig.load(reader); //on récupère les données du fichier .properties passé en paramètre
+            Configuration configuration = getConfiguration(emptyConfig);
+
+            int numLevels = integerProperty(emptyConfig, "levels", 1); //on récupère le nombre de niveaux
+            World world = new World(numLevels); //initialisation d'un monde vide avec le nombre de niveaux
+            MapRepoString mapRepo = new MapRepoString();
+
+            //chargement du premier niveau
+            String level1Data = emptyConfig.getProperty("level1"); //on récupère le niveau 1 depuis le fichier
+            if (level1Data == null)
+                throw new RuntimeException("Level 1 data missing");
+            MapLevel mapLevel1 = mapRepo.load(level1Data);
+            Position gardenerPosition = mapLevel1.getGardenerPosition();
+            if (gardenerPosition == null)
+                throw new RuntimeException("Gardener not found");
+
+            //création du jeu avec le premier niveau
+            Game game = new Game(world, configuration, gardenerPosition);
+            Map level1 = new Level(game, 1, mapLevel1);
+            world.put(1, level1);
+
+            //gestion de plusieurs niveaux
+            if (numLevels > 1){
+                for (int i = 2; i <= numLevels; i++) {
+                    String levelData = emptyConfig.getProperty("level" + i);
+                    if (levelData != null) {
+                        MapLevel mapLevel = mapRepo.load(levelData); //création d'un espace pour le nouveau niveau
+
+                        //on crée le niveau et on l'ajoute au monde
+                        Map level = new Level(game, i, mapLevel);
+                        world.put(i, level);
+                    }
+                }
+            }
+            return game;
+        } catch (IOException e) {
+            throw new RuntimeException("Error loading file", e);
+        }
     }
 
     public Game load() {

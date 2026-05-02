@@ -36,9 +36,31 @@ public class Game {
         return switchLevel;
     }
 
+    public void switchLevel() {
+        if (switchLevelRequested) {
+            //on change le numéro du niveau dans le "world"
+            world.setCurrentLevel(switchLevel);
+            //on nettoie la requête
+            clearSwitchLevel();
+        }
+    }
+
     public void requestSwitchLevel(int level) {
+        int currentIndex = world.currentLevel();
+        Map currentMap = world.getGrid(currentIndex);
+
+        //si on veut passer au niveau suivant : le gardener envoie currentLevel+1
+        if (level > currentIndex) {
+            if (currentMap instanceof Level currentLevel) {
+                //donc on vérifie ici si la condition des carottes est remplie
+                if (currentLevel.hasCarrots()) {
+                    return;
+                }
+            }
+        }
+        //si on descend ou si on a le droit de monter (tous les autres cas), on pourra changer de niveau
         this.switchLevel = level;
-        switchLevelRequested = true;
+        this.switchLevelRequested = true;
     }
 
     public void clearSwitchLevel() {

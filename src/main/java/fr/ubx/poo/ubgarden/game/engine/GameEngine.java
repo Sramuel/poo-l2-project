@@ -6,6 +6,11 @@
 
     import fr.ubx.poo.ubgarden.game.Direction;
     import fr.ubx.poo.ubgarden.game.Game;
+    import fr.ubx.poo.ubgarden.game.Position;
+    import fr.ubx.poo.ubgarden.game.go.decor.Decor;
+    import fr.ubx.poo.ubgarden.game.go.decor.DoorNext;
+    import fr.ubx.poo.ubgarden.game.go.decor.DoorPrevOpened;
+    import fr.ubx.poo.ubgarden.game.Map;
     import fr.ubx.poo.ubgarden.game.go.personage.Gardener;
     import fr.ubx.poo.ubgarden.game.view.ImageResource;
     import fr.ubx.poo.ubgarden.game.view.Sprite;
@@ -110,13 +115,39 @@
 
         private void checkLevel() {
             if (game.isSwitchLevelRequested()) {
-                // Find the new level to switch to
-                // clear all sprites
-                // change the current level
-                // Find the position of the door to reach
-                // Set the position of the gardener
-                // initialize();
+                //nettoyage de l'ancien niveau
+                layer.getChildren().clear();
+                sprites.clear();
+                int levelAvant = game.world().currentLevel(); // On mémorise le niveau précédent avant le switch
+                //transition vers le nouveau niveau
+                game.switchLevel();
+                initialize();
+                //repositionnement du jardinier qui doit être placé sur la porte d'entrée du nouveau niveau
+                Position newPos = findDoorPosition(levelAvant);
+                game.getGardener().setPosition(newPos);
             }
+        }
+
+        private Position findDoorPosition(int levelAvant) {
+            int targetLevel = game.getSwitchLevel();
+            Map currentMap = game.world().getGrid(); //la carte du nouveau niveau
+
+            for (int x = 0; x < currentMap.width(); x++) {
+                for (int y = 0; y < currentMap.height(); y++) {
+                    Position pos = new Position(targetLevel, x, y);
+                    Decor decor = currentMap.get(pos);
+
+                    //si on monte, on cherche la porte d'entrée du nouveau niveau
+                    if (targetLevel > levelAvant && decor instanceof DoorPrevOpened) {
+                        return pos;
+                    }
+                    // Si on descend, on cherche la porte de sortie de l'ancien niveau
+                    if (targetLevel < levelAvant && decor instanceof DoorNext) {
+                        return pos;
+                    }
+                }
+            }
+            return game.getGardener().getPosition();
         }
 
         private void checkCollision() {
@@ -185,7 +216,10 @@
         }
 
         private void render() {
-            sprites.forEach(Sprite::render);
+            sprites.forEach(sprite -> {
+                sprite.updateImage(); //mise à jour du sprite de la porte à ouvrir
+                sprite.render();
+            });
         }
 
         public void start() {

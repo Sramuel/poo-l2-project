@@ -38,12 +38,13 @@ public final class SpriteFactory {
         if (gameObject instanceof Hedgehog)
             return new Sprite(layer, factory.get(HEDGEHOG), gameObject);
 
-        /* //portes
-        if (gameObject instanceof DoorPrevOpened || gameObject instanceof DoorNextOpened )
+        //portes
+        if (gameObject instanceof DoorPrevOpened) {
             return new Sprite(layer, factory.get(DOOR_OPENED), gameObject);
-        if (gameObject instanceof DoorNextClosed)
-            return new Sprite(layer, factory.get(DOOR_CLOSED), gameObject);
-        */
+        }
+        if (gameObject instanceof DoorNext) {
+            return new SpriteDoor(layer, gameObject);
+        }
 
         //bonus
         if (gameObject instanceof Carrots)

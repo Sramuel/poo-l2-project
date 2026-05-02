@@ -6,8 +6,8 @@ package fr.ubx.poo.ubgarden.game.go.personage;
 
 import fr.ubx.poo.ubgarden.game.Direction;
 import fr.ubx.poo.ubgarden.game.Game;
+import fr.ubx.poo.ubgarden.game.Level;
 import fr.ubx.poo.ubgarden.game.Position;
-import fr.ubx.poo.ubgarden.game.engine.GameEngine;
 import fr.ubx.poo.ubgarden.game.go.GameObject;
 import fr.ubx.poo.ubgarden.game.go.Movable;
 import fr.ubx.poo.ubgarden.game.go.PickupVisitor;
@@ -16,11 +16,7 @@ import fr.ubx.poo.ubgarden.game.go.bonus.Carrots;
 import fr.ubx.poo.ubgarden.game.go.bonus.EnergyBoost;
 import fr.ubx.poo.ubgarden.game.go.bonus.Insecticide;
 import fr.ubx.poo.ubgarden.game.go.bonus.PoisonedApple;
-import fr.ubx.poo.ubgarden.game.go.decor.Decor;
-import fr.ubx.poo.ubgarden.game.go.decor.Flowers;
-import fr.ubx.poo.ubgarden.game.go.decor.Hedgehog;
-import fr.ubx.poo.ubgarden.game.go.decor.Tree;
-import javafx.scene.paint.Color;
+import fr.ubx.poo.ubgarden.game.go.decor.*;
 
 import fr.ubx.poo.ubgarden.game.engine.Timer;
 
@@ -40,11 +36,11 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     private boolean moveRequested = false;
     private boolean won = false;
 
-    private Timer energyRecoverTimer;
+    private final Timer energyRecoverTimer;
 
     private int carrots =0;
     private int bombs =0;
-    private List<Timer> diseaseTimers = new ArrayList<>(); //gère plusieurs trognons en même temps
+    private final List<Timer> diseaseTimers = new ArrayList<>(); //gère plusieurs trognons en même temps
 
     public int getCarrots() {
         return carrots;
@@ -86,6 +82,8 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     public void pickUp(Carrots carrots){
         this.carrots++;
         carrots.remove();
+        Level level = (Level) game.world().getGrid();
+        level.updateDoors(); //on cherche à ouvrir la porte quand toutes les carottes on été ramasées
     }
 
     public void pickUp(Insecticide insecticide) {
@@ -131,10 +129,7 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
         Decor next = game.world().getGrid().get(nextPos);
 
         //collisions avec les arbres / les fleurs
-        if (next instanceof Tree || next instanceof Flowers){
-            return false;
-        }
-        return true;
+        return !(next instanceof Tree) && !(next instanceof Flowers);
     }
 
     @Override
@@ -150,11 +145,18 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     public void update(long now) {
         Position nextPos = direction.nextPosition(getPosition());
         Decor next = game.world().getGrid().get(nextPos);
-        //GESTION DU DEPLACEMENT ET DE LA RECUPERATION D'ENERGIE
+        //gestion du déplacement et de la récupération d'énergie
         if (moveRequested) {
             if (canMove(direction)) {
                 move(direction);
                 this.energy = getEnergy() - next.energyConsumptionWalk()*this.diseaseLevel;
+                //on vérifie le décor où se trouve le jardinier après move()
+                Decor currentDecor = game.world().getGrid().get(getPosition());
+                if (currentDecor instanceof DoorNext && ((DoorNext) currentDecor).getIsOpen()) {
+                    game.requestSwitchLevel(game.world().currentLevel() + 1);
+                } else if (currentDecor instanceof DoorPrevOpened) {
+                    game.requestSwitchLevel(game.world().currentLevel() - 1);
+                }
             }
             energyRecoverTimer.start();
         }else {
@@ -167,7 +169,7 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
                 energyRecoverTimer.start();
             }
         }
-        //GESTION DE LA FIN DES MALADIES (les trognons de pomme)
+        //gestion de la fin des maladies (les trognons de pomme)
         for (int i = diseaseTimers.size() - 1; i >= 0; i--) {
             Timer t = diseaseTimers.get(i);
             t.update(now);
@@ -176,7 +178,7 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
                 diseaseLevel--;
             }
         }
-        //GESTION DE LA DEFAITE
+        //gestion de la défaite
         if (this.energy <= 0) {
             this.energy = 0;
         }

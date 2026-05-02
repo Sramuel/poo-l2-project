@@ -34,6 +34,10 @@ public class Sprite {
         if (this.image == null || this.image != image || this.effect != effect) {
             this.image = image;
             this.effect = effect;
+            if (this.imageView != null) {
+                this.imageView.setImage(image); //on met à jour en temps réél le sprite de la porte qui s'est ouverte
+                this.imageView.setEffect(effect);
+            }
         }
     }
 

@@ -52,6 +52,14 @@ public class ImageResourceFactory {
         return get(ImageResource.valueOf("GARDENER_" + direction));
     }
 
+    public Image getDoor(boolean isOpen) {
+        if (isOpen){
+            return get(ImageResource.DOOR_OPENED);
+        } else {
+            return get(ImageResource.DOOR_CLOSED);
+        }
+    }
+
     private static class LoadSingleton {
         static final ImageResourceFactory INSTANCE = new ImageResourceFactory();
     }

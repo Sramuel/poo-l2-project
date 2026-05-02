@@ -17,7 +17,6 @@ public class Level implements Map {
 
     private final int level;
     private final int width;
-
     private final int height;
 
     private final java.util.Map<Position, Decor> decors = new HashMap<>();
@@ -57,11 +56,22 @@ public class Level implements Map {
                         decors.put(position, new Hedgehog(position));
                         break;}
 
+                    //portes
+                    case DoorNextClosed:{
+                        decors.put(position, new DoorNext(position,false));
+                        break;}
+                    case DoorNextOpened:{
+                        decors.put(position, new DoorNext(position,true));
+                        break;}
+                    case DoorPrevOpened:{
+                        decors.put(position, new DoorPrevOpened(position));
+                        break;}
+
                     //bonus
                     case Carrots:{
-                        Decor grass = new Grass(position);
-                        grass.setBonus(new Carrots(position, grass));
-                        decors.put(position,grass);
+                        Decor land = new Land(position);
+                        land.setBonus(new Carrots(position, land));
+                        decors.put(position,land);
                         break;}
                     case PoisonedApple:{
                         Decor grass = new Grass(position);
@@ -109,5 +119,23 @@ public class Level implements Map {
         return true;
     }
 
+    public boolean hasCarrots() {
+        for (Decor dec : values()) {
+            if (dec.getBonus() != null && dec.getBonus() instanceof Carrots) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void updateDoors() {
+        if (!hasCarrots()) {
+            for (Decor dec : decors.values()) {
+                if (dec instanceof DoorNext) {
+                    ((DoorNext) dec).setIs_open();
+                }
+            }
+        }
+    }
 
 }
