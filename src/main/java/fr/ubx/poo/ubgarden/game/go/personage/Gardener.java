@@ -186,6 +186,7 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     }
 
     public void hurt(int damage) {
+        this.energy -= damage;
     }
 
     public void hurt() {

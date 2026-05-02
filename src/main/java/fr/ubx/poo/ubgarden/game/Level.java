@@ -7,11 +7,14 @@ import fr.ubx.poo.ubgarden.game.go.bonus.PoisonedApple;
 import fr.ubx.poo.ubgarden.game.go.decor.*;
 import fr.ubx.poo.ubgarden.game.go.decor.ground.Grass;
 import fr.ubx.poo.ubgarden.game.go.decor.ground.Land;
+import fr.ubx.poo.ubgarden.game.go.personage.Wasp;
 import fr.ubx.poo.ubgarden.game.launcher.MapEntity;
 import fr.ubx.poo.ubgarden.game.launcher.MapLevel;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Level implements Map {
 
@@ -20,6 +23,12 @@ public class Level implements Map {
     private final int height;
 
     private final java.util.Map<Position, Decor> decors = new HashMap<>();
+
+    public List<Wasp> getWasps() {
+        return wasps;
+    }
+
+    private final List<Wasp> wasps = new LinkedList<>();
 
     public Level(Game game, int level, MapLevel entities) {
         this.level = level;
@@ -47,7 +56,7 @@ public class Level implements Map {
                         decors.put(position, new Flowers(position));
                         break;}
                     case NestWasp:{
-                        decors.put(position, new NestWasp(position));
+                        decors.put(position, new NestWasp(position,game));
                         break;}
                     case NestHornet:{
                         decors.put(position, new NestHornet(position));

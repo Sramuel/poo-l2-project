@@ -68,7 +68,7 @@ goto fail
 :execute
 @rem Setup the command line
 
-set CLASSPATH=%APP_HOME%\lib\UBGarden-student-2025-1.0.jar;%APP_HOME%\lib\javafx-fxml-17-win.jar;%APP_HOME%\lib\javafx-controls-17-win.jar;%APP_HOME%\lib\javafx-controls-17.jar;%APP_HOME%\lib\javafx-graphics-17-win.jar;%APP_HOME%\lib\javafx-graphics-17.jar;%APP_HOME%\lib\javafx-base-17-win.jar;%APP_HOME%\lib\javafx-base-17.jar
+set CLASSPATH=%APP_HOME%\lib\UBGarden-student-2025-1.0.jar;%APP_HOME%\lib\javafx-fxml-17-linux.jar;%APP_HOME%\lib\javafx-controls-17-linux.jar;%APP_HOME%\lib\javafx-controls-17.jar;%APP_HOME%\lib\javafx-graphics-17-linux.jar;%APP_HOME%\lib\javafx-graphics-17.jar;%APP_HOME%\lib\javafx-base-17-linux.jar;%APP_HOME%\lib\javafx-base-17.jar
 
 
 @rem Execute UBGarden-student-2025

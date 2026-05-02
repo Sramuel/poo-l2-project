@@ -4,18 +4,14 @@
 
     package fr.ubx.poo.ubgarden.game.engine;
 
-    import fr.ubx.poo.ubgarden.game.Direction;
-    import fr.ubx.poo.ubgarden.game.Game;
-    import fr.ubx.poo.ubgarden.game.Position;
+    import fr.ubx.poo.ubgarden.game.*;
+    import fr.ubx.poo.ubgarden.game.Map;
     import fr.ubx.poo.ubgarden.game.go.decor.Decor;
     import fr.ubx.poo.ubgarden.game.go.decor.DoorNext;
     import fr.ubx.poo.ubgarden.game.go.decor.DoorPrevOpened;
-    import fr.ubx.poo.ubgarden.game.Map;
     import fr.ubx.poo.ubgarden.game.go.personage.Gardener;
-    import fr.ubx.poo.ubgarden.game.view.ImageResource;
-    import fr.ubx.poo.ubgarden.game.view.Sprite;
-    import fr.ubx.poo.ubgarden.game.view.SpriteFactory;
-    import fr.ubx.poo.ubgarden.game.view.SpriteGardener;
+    import fr.ubx.poo.ubgarden.game.go.personage.Wasp;
+    import fr.ubx.poo.ubgarden.game.view.*;
     import javafx.animation.AnimationTimer;
     import javafx.application.Platform;
     import javafx.scene.Group;
@@ -151,7 +147,18 @@
         }
 
         private void checkCollision() {
-            // Check a collision between the gardener and a wasp or an hornet
+            if (game.world().getGrid() instanceof Level level) {
+                //on parcourt la liste à l'envers pour pouvoir supprimer sans sauter un elt
+                for (int i = level.getWasps().size()-1; i >= 0; i--) {
+                    Wasp wasp = level.getWasps().get(i);
+                    //si la guêpe touche le jardinier
+                    if (gardener.getPosition().equals(wasp.getPosition())) {
+                        gardener.hurt(20);  //-20 énergie
+                        wasp.remove();              //la guêpe meurt
+                        level.getWasps().remove(i); //on la retire de la liste
+                    }
+                }
+            }
         }
 
         private void processInput() {
@@ -191,6 +198,23 @@
 
         private void update(long now) {
             game.world().getGrid().values().forEach(decor -> decor.update(now));
+
+            if (game.world().getGrid() instanceof Level level) {
+                for (Wasp wasp : level.getWasps()) {
+                    wasp.update(now);
+                    //si la guêpe vient de naître et n'a pas d'image alors on lui en crée une
+                    boolean hasSprite = false;
+                    for (Sprite s : sprites) {
+                        if (s.getGameObject() == wasp) {
+                            hasSprite = true;
+                            break; //on a trouvé alors on arrête de chercher
+                        }
+                    }
+                    if (!hasSprite) {
+                        sprites.add(new SpriteWasp(layer, wasp));
+                    }
+                }
+            }
 
             gardener.update(now);
 

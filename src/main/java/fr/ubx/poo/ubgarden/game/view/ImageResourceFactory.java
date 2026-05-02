@@ -52,6 +52,10 @@ public class ImageResourceFactory {
         return get(ImageResource.valueOf("GARDENER_" + direction));
     }
 
+    public Image getWasp(Direction direction) {
+        return get(ImageResource.valueOf("WASP_" + direction));
+    }
+
     public Image getDoor(boolean isOpen) {
         if (isOpen){
             return get(ImageResource.DOOR_OPENED);
