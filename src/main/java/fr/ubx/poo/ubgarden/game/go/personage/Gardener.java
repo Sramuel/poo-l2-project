@@ -197,5 +197,8 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
         return direction;
     }
 
+    public void useInsecticide() {
+        this.bombs--;
+    }
 
 }

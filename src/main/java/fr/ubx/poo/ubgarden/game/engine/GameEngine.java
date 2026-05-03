@@ -155,27 +155,54 @@
                 //on parcourt la liste à l'envers pour pouvoir supprimer sans sauter un elt
                 for (int i = level.getWasps().size()-1; i >= 0; i--) {
                     Wasp wasp = level.getWasps().get(i);
+                    Decor decorAtWasp = level.get(wasp.getPosition()); //on récupère le décor sous la guêpe
                     //si la guêpe touche le jardinier
                     if (gardener.getPosition().equals(wasp.getPosition())) {
-                        gardener.hurt(20);  //-20 énergie
-                        wasp.remove();              //la guêpe meurt
+                        if (gardener.getBombs()>0){
+                            gardener.useInsecticide();
+                            wasp.remove();              //la guêpe meurt
+                            level.getWasps().remove(i); //on la retire de la liste
+                            continue;
+                        }
+                        else{
+                            gardener.hurt(20);  //-20 énergie
+                            wasp.remove();              //la guêpe meurt
+                            level.getWasps().remove(i); //on la retire de la liste
+                            continue;
+                        }
+                    }
+                    //si la guêpe touche une bombe
+                    if (decorAtWasp.getBonus() instanceof Insecticide) {
+                        decorAtWasp.getBonus().remove(); //la bombe explose et disparaît
+                        wasp.remove(); //la guêpe meurt
                         level.getWasps().remove(i); //on la retire de la liste
                     }
                 }
 
                 for (int i = level.getHornets().size() - 1; i >= 0; i--) {
                     Hornet hornet = level.getHornets().get(i);
+                    Decor decorAtHornet = level.get(hornet.getPosition()); //on récupère le décor sous le frelon
                     //si le frelon touche le jardinier
                     if (!hornet.isDeleted() && gardener.getPosition().equals(hornet.getPosition())) {
-                        gardener.hurt(30);//-30 énergie
-                        hornet.takeDamage(); //le frelon perd 1 point de vie en piquant
+                        if (gardener.getBombs()>0) {
+                            gardener.useInsecticide();
+                            hornet.takeDamage(); //le frelon perd 1 point de vie en prenant la bombe
+                        }
+                        else{
+                            gardener.hurt(30);//-30 énergie
+                            hornet.takeDamage(); //le frelon perd 1 point de vie en piquant
+                        }
+                    }
+                    //si le frelon touche une bombe
+                    if (!hornet.isDeleted() && decorAtHornet.getBonus() instanceof Insecticide) {
+                        decorAtHornet.getBonus().remove(); // La bombe explose et disparaît
+                        hornet.takeDamage(); //le frelon perd 1 point de vie en touchant la bombe
                     }
                     //s'il est mort on le retire de la liste du niveau
                     if (hornet.isDeleted()) {
                         level.getHornets().remove(i);
                     }
                 }
-
             }
         }
 
@@ -247,7 +274,7 @@
                         sprites.add(new SpriteHornet(layer, hornet));
                     }
                 }
-
+                //insecticides
                 for (Decor decor : game.world().getGrid().values()) {
                     Bonus bonus = decor.getBonus();
                     //si l'insecticide vient d'apparaitre et n'a pas d'image alors on lui en crée une
