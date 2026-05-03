@@ -42,7 +42,7 @@ public class NestWasp extends Decor {
                 while (!spawned && attempts < 10) { //on essaie de poser une bombe jusqu'à 10 fois (pour essayer de garder 1 bombe/guêpe)
                     Position randomPos = random_pos(); //génération d'une position aléatoire
                     Decor decor = currentLevel.get(randomPos);
-                    if (decor instanceof Grass && decor.getBonus() == null) { //poser la bombe où c'est libre
+                    if (decor instanceof Grass && decor.getBonus() == null && randomPos != game.getGardener().getPosition()) { //poser la bombe où c'est libre
                         decor.setBonus(new Insecticide(game, randomPos, decor));
                         spawned = true;
                     }
