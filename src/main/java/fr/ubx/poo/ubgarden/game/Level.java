@@ -94,7 +94,7 @@ public class Level implements Map {
                         break;}
                     case Insecticide:{
                         Decor grass = new Grass(position);
-                        grass.setBonus(new Insecticide(position, grass));
+                        grass.setBonus(new Insecticide(game, position, grass));
                         decors.put(position,grass);
                         break;}
 

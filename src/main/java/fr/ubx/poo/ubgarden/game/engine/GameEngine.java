@@ -6,6 +6,8 @@
 
     import fr.ubx.poo.ubgarden.game.*;
     import fr.ubx.poo.ubgarden.game.Map;
+    import fr.ubx.poo.ubgarden.game.go.bonus.Bonus;
+    import fr.ubx.poo.ubgarden.game.go.bonus.Insecticide;
     import fr.ubx.poo.ubgarden.game.go.decor.Decor;
     import fr.ubx.poo.ubgarden.game.go.decor.DoorNext;
     import fr.ubx.poo.ubgarden.game.go.decor.DoorPrevOpened;
@@ -24,6 +26,7 @@
     import javafx.scene.text.TextAlignment;
 
     import java.util.*;
+    import static fr.ubx.poo.ubgarden.game.view.ImageResource.INSECTICIDE;
 
 
     public final class GameEngine {
@@ -212,6 +215,22 @@
                     }
                     if (!hasSprite) {
                         sprites.add(new SpriteWasp(layer, wasp));
+                    }
+                }
+                for (Decor decor : game.world().getGrid().values()) {
+                    Bonus bonus = decor.getBonus();
+                    //si l'insecticide vient d'apparaitre et n'a pas d'image alors on lui en crée une
+                    if (bonus instanceof Insecticide insecticide) {
+                        boolean hasSprite = false;
+                        for (Sprite s : sprites) {
+                            if (s.getGameObject() == insecticide) {
+                                hasSprite = true;
+                                break;
+                            }
+                        }
+                        if (!hasSprite) {
+                            sprites.add(new Sprite(layer, ImageResourceFactory.getInstance().get(INSECTICIDE), insecticide));
+                        }
                     }
                 }
             }
