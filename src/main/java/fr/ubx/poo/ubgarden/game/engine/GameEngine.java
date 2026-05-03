@@ -12,6 +12,7 @@
     import fr.ubx.poo.ubgarden.game.go.decor.DoorNext;
     import fr.ubx.poo.ubgarden.game.go.decor.DoorPrevOpened;
     import fr.ubx.poo.ubgarden.game.go.personage.Gardener;
+    import fr.ubx.poo.ubgarden.game.go.personage.Hornet;
     import fr.ubx.poo.ubgarden.game.go.personage.Wasp;
     import fr.ubx.poo.ubgarden.game.view.*;
     import javafx.animation.AnimationTimer;
@@ -161,6 +162,20 @@
                         level.getWasps().remove(i); //on la retire de la liste
                     }
                 }
+
+                for (int i = level.getHornets().size() - 1; i >= 0; i--) {
+                    Hornet hornet = level.getHornets().get(i);
+                    //si le frelon touche le jardinier
+                    if (!hornet.isDeleted() && gardener.getPosition().equals(hornet.getPosition())) {
+                        gardener.hurt(30);//-30 énergie
+                        hornet.takeDamage(); //le frelon perd 1 point de vie en piquant
+                    }
+                    //s'il est mort on le retire de la liste du niveau
+                    if (hornet.isDeleted()) {
+                        level.getHornets().remove(i);
+                    }
+                }
+
             }
         }
 
@@ -217,6 +232,22 @@
                         sprites.add(new SpriteWasp(layer, wasp));
                     }
                 }
+
+                //frelons
+                for (Hornet hornet : level.getHornets()) {
+                    hornet.update(now);
+                    boolean hasSprite = false;
+                    for (Sprite s : sprites) {
+                        if (s.getGameObject() == hornet) {
+                            hasSprite = true;
+                            break;
+                        }
+                    }
+                    if (!hasSprite) {
+                        sprites.add(new SpriteHornet(layer, hornet));
+                    }
+                }
+
                 for (Decor decor : game.world().getGrid().values()) {
                     Bonus bonus = decor.getBonus();
                     //si l'insecticide vient d'apparaitre et n'a pas d'image alors on lui en crée une
