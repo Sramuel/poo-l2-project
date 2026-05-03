@@ -40,7 +40,7 @@ public class NestHornet extends Decor {
 
                 int spawned = 0;
                 int attempts = 0;
-                while (spawned<2 && attempts < 10) { //on essaie de poser les deux bombes jusqu'à 10 fois (pour essayer de garder 2 bombes/frelon)
+                while (spawned<2 && attempts < 20) { //on essaie de poser les deux bombes jusqu'à 20 fois (pour essayer de garder 2 bombes/frelon)
                     Position randomPos = random_pos(); //génération d'une position aléatoire
                     Decor decor = currentLevel.get(randomPos);
                     if (decor instanceof Grass && decor.getBonus() == null && randomPos != game.getGardener().getPosition()) { //poser la bombe où c'est libre

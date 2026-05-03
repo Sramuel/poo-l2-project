@@ -11,7 +11,7 @@ public class Main extends Application {
     public void start(Stage stage)  {
         GameLauncherView launcher = new GameLauncherView(stage);
         Scene scene = new Scene(launcher);
-        stage.setTitle("UBGarden 2025");
+        stage.setTitle("UBGarden 2026");
         stage.setScene(scene);
         stage.sizeToScene();
         stage.show();

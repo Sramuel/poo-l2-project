@@ -44,7 +44,7 @@ public class GameLauncherView extends BorderPane {
         menuBar.getMenus().addAll(menuGame, menuEditor);
         this.setTop(menuBar);
 
-        Text text = new Text("UBGarden 2025");
+        Text text = new Text("UBGarden 2026");
         text.getStyleClass().add("message");
         VBox scene = new VBox();
         scene.getChildren().add(text);

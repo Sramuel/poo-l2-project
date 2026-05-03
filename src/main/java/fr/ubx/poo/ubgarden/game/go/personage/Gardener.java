@@ -23,7 +23,7 @@ import fr.ubx.poo.ubgarden.game.engine.Timer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Gardener extends GameObject implements Movable, PickupVisitor, WalkVisitor {
+public class    Gardener extends GameObject implements Movable, PickupVisitor, WalkVisitor {
 
     public int getDiseaseLevel() {
         return diseaseLevel;
@@ -38,13 +38,8 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
 
     private final Timer energyRecoverTimer;
 
-    private int carrots =0;
     private int bombs =0;
     private final List<Timer> diseaseTimers = new ArrayList<>(); //gère plusieurs trognons en même temps
-
-    public int getCarrots() {
-        return carrots;
-    }
 
     public int getBombs() {
         return bombs;
@@ -80,7 +75,6 @@ public class Gardener extends GameObject implements Movable, PickupVisitor, Walk
     }
 
     public void pickUp(Carrots carrots){
-        this.carrots++;
         carrots.remove();
         Level level = (Level) game.world().getGrid();
         level.updateDoors(); //on cherche à ouvrir la porte quand toutes les carottes on été ramasées
